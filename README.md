@@ -1,4 +1,4 @@
-# xtract_attachment
+# xtract_attachment [![Codacy Badge](https://api.codacy.com/project/badge/Grade/77b81d2d5ae94ca0af67f0c921f9992c)](https://www.codacy.com/app/alexlab2017/xtract_attachment?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=alexlab2017/xtract_attachment&amp;utm_campaign=Badge_Grade)
 
 Questa è un'utility per estrarre eventuali allegati da una fattura in formato "xml".
 
