@@ -145,7 +145,7 @@ def yield_decoded_attachment(attachments):
             attachment -- string, the content of a single <Allegati> tag
 
     Returns:
-        yields a tuple (filename, attachment)
+        yields a tuple (dirname, filename, attachment)
             dirname -- string, directory part of the path
             filename -- string, basename for the attachment
             attachment -- bytes, decoded <Attachment> tag
