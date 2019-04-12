@@ -85,7 +85,7 @@ Nella cartella "test" troverai tre file di esempio elencati di seguito, con il r
 NOTA: per quanto riguarda il file "IT01234567890\_FPR03.xml" non vedrai alcun messaggio in quanto nello stile Unix/Linux "nessun output" vuol dire "tutto ok".
 
 -   binary.xml
-    -   WARNING: open and read file "binary.xml" fail: 'utf-8' codec can't decode byte 0xa1 in position 0: invalid start byte
+    -   `WARNING: open and read file "binary.xml" fail: 'utf-8' codec can't decode byte 0xa1 in position 0: invalid start byte`
 
 -   IT01234567890\_FPR03.xml
     -   IT01234567890\_FPR03\_allegato\_3.pdf
@@ -94,6 +94,6 @@ NOTA: per quanto riguarda il file "IT01234567890\_FPR03.xml" non vedrai alcun me
     -   myAttachment123\_2.txt
 
 -   IT01234567890\_FPR04\_errors.xml
-    -   WARNING: Processing `<Allegati>` tag n#3 in "IT01234567890\_FPR04\_errors.xml": `<Attachment>` tag not found.
-    -   WARNING: Processing `<Allegati>` tag n#1 in "IT01234567890\_FPR04\_errors.xml": `<Attachment>` tag empty.
-    -   WARNING: Processing `<Allegati>` tag n#2 in "IT01234567890\_FPR04\_errors.xml": `<Attachment>` tag wrong encoding.
+    -   `WARNING: Processing <Allegati> tag n#3 in "IT01234567890\_FPR04\_errors.xml": <Attachment> tag not found.`
+    -   `WARNING: Processing <Allegati> tag n#1 in "IT01234567890\_FPR04\_errors.xml": <Attachment> tag empty.`
+    -   `WARNING: Processing <Allegati> tag n#2 in "IT01234567890\_FPR04\_errors.xml": <Attachment> tag wrong encoding.`
