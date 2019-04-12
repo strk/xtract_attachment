@@ -22,7 +22,7 @@ Ho cominciato con poche righe di codice, per finire con questo programma.
 ### pyinstaller
 
 Il mio amico usa Windows e non è molto pratico di informatica, quindi ho usato pyinstaller per creare un eseguibile.
-Se vuoi farlo anche tu, ricordati di assegnare il valore `True` alla variabile `_pyinstaller_trick`, in questo modo il programma analizzerà tutti i file "xml" presenti nella directory da cui viene eseguito.
+Se vuoi farlo anche tu, ricordati di assegnare il valore `True` alla variabile `_OVERRIDE`, in questo modo il programma analizzerà tutti i file "xml" presenti nella directory da cui viene eseguito.
 
 Io ho usato le seguenti opzioni:
 
@@ -81,9 +81,19 @@ Ad ogni modo, dato lo scopo principale di aiutare un amico e la mancanza di docu
 
 ## Test
 
-Nella cartella "test" troverai un file di esempio che ho scaricato dalla documentazione dell'Agenzia delle Entrate nel quale ho aggiunto degli allegati. Se eseguirai il programma su quel file, otterrai quattro allegati con al loro interno poche righe che confermano le loro caratteristiche.
+Nella cartella "test" troverai tre file di esempio elencati di seguito, con il relativo output.
+NOTA: per quanto riguarda il file "IT01234567890\_FPR03.xml" non vedrai alcun messaggio in quanto nello stile Unix/Linux "nessun output" vuol dire "tutto ok".
 
--   'IT01234567890\_FPR03\_allegato\_3.pdf'
--   'IT01234567890\_FPR03\_allegato\_4.txt'
--   'myAttachment123\_1.pdf'
--   'myAttachment123\_2.txt'
+-   binary.xml
+    -   WARNING: open and read file "binary.xml" fail: 'utf-8' codec can't decode byte 0xa1 in position 0: invalid start byte
+
+-   IT01234567890\_FPR03.xml
+    -   IT01234567890\_FPR03\_allegato\_3.pdf
+    -   IT01234567890\_FPR03\_allegato\_4.txt
+    -   myAttachment123\_1.pdf
+    -   myAttachment123\_2.txt
+
+-   IT01234567890\_FPR04\_errors.xml
+    -   WARNING: Processing `<Allegati>` tag n#3 in "IT01234567890\_FPR04\_errors.xml": `<Attachment>` tag not found.
+    -   WARNING: Processing `<Allegati>` tag n#1 in "IT01234567890\_FPR04\_errors.xml": `<Attachment>` tag empty.
+    -   WARNING: Processing `<Allegati>` tag n#2 in "IT01234567890\_FPR04\_errors.xml": `<Attachment>` tag wrong encoding.

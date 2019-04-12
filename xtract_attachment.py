@@ -33,16 +33,19 @@
 
 import argparse
 import base64
+import logging
 import os
 import re
-import sys
 
 
 # Assign `True` to override argparse section and set `path = cwd`.
 #+ Used to "compile" with pyinstaller.
-_pyinstaller_trick = False # pylint: disable=invalid-name
+_OVERRIDE = False
+# Setup logging
+logging.basicConfig(format='{levelname}: {message}', style='{')
+_LOG = logging.getLogger(__name__)
 
-regex = { # pylint: disable=invalid-name
+REGEX = {
     'allegati' : re.compile(r'''<\s*Allegati\s*>
                                 (.*?)
                                 <\s*/\s*Allegati\s*>''',
@@ -74,15 +77,15 @@ regex = { # pylint: disable=invalid-name
 def yield_xml_files(path):
     """Open, read and yield "xml" file(s) content.
 
-       NOTE: generator function.
+    NOTE: generator function.
 
-       Parameters:
-           path -- string, path to a file or a direcotry
+    Parameters:
+        path -- string, path to a file or a direcotry
 
-       Returns:
-           yield a tuple (path, xml)
-               path -- string, absolute path to file
-               xml -- string, the content of xml file
+    Returns:
+        yield a tuple (path, xml)
+            path -- string, absolute path to file
+            xml -- string, the content of xml file
     """
     files = []
     path = os.path.abspath(path)
@@ -94,7 +97,7 @@ def yield_xml_files(path):
     except NotADirectoryError:
         files = [path]
     except FileNotFoundError as ex:
-        print(ex, file=sys.stderr)
+        _LOG.critical(ex)
         exit(1)
 
     for path_ in files:
@@ -102,7 +105,7 @@ def yield_xml_files(path):
             with open(path_, 'r') as file:
                 yield (path_, file.read())
         except Exception as ex: # pylint: disable=broad-except
-            print(ex, file=sys.stderr)
+            _LOG.warning(f'open and read file "{os.path.basename(path_)}" fail: {ex}')
 
 
 def list_attachments(file):
@@ -121,7 +124,7 @@ def list_attachments(file):
     """
     attachments = []
     path, xml = file
-    found = regex.get('allegati').findall(xml)
+    found = REGEX.get('allegati').findall(xml)
     if found:
         for allegato in found:
             attachments.append((path, allegato))
@@ -152,10 +155,10 @@ def yield_decoded_attachment(attachments):
     """
     for idx, (path, attachment) in enumerate(attachments):
 
-        attachment_ = regex.get('allegato').search(attachment)
+        attachment_ = REGEX.get('allegato').search(attachment)
         dirname, basename = os.path.split(path)
         # Parse <NomeAttachment> tag
-        nome = regex.get('nome').search(attachment)
+        nome = REGEX.get('nome').search(attachment)
         try:
             # Even being a mandatory TAG, I prefer to have a fallback
             nome = nome.group(1)
@@ -163,23 +166,30 @@ def yield_decoded_attachment(attachments):
             basename_ = os.path.splitext(basename)[0]
             nome = f'{basename_}_allegato_{idx+1}'
         # Parse <Attachment> tag
+        msg = f'Processing <Allegati> tag n#{idx+1} in "{basename}"'
         try:
             attachment_ = attachment_.group(1)
             attachment_ = base64.b64decode(attachment_)
+        except AttributeError:
+            _LOG.warning(f'{msg}: <Attachment> tag not found.')
+            continue
+        except base64.binascii.Error:
+            _LOG.warning(f'{msg}: <Attachment> tag wrong encoding.')
+            continue
+        # add here more specific exceptions
         except Exception as ex: # pylint: disable=broad-except
-            # No <Attachment> tag or fail to decode
-            print(f'Error decoding "{nome}" in "{basename}" : {ex}',
-                  file=sys.stderr)
+            _LOG.warning(f'{msg}: unexpected exception: {ex}')
             continue
         # Check for empty attachment
         if attachment_ == b'':
+            _LOG.warning(f'{msg}: <Attachment> tag empty.')
             continue
         # Attempt to determine file type and set extension
         if attachment_[:5] == b'%PDF-':
             ext = 'pdf'
         # Add other possible file type checks here `elif`...
-        elif regex.get('formato').search(attachment):
-            ext = regex.get('formato').search(attachment)
+        elif REGEX.get('formato').search(attachment):
+            ext = REGEX.get('formato').search(attachment)
             ext = ext.group(1).lower()
         else:
             ext = 'formatoSconosciuto'
@@ -190,18 +200,18 @@ def yield_decoded_attachment(attachments):
 def write_attachment(attachment, outdir=None, safety='max'):
     """Write an "attachment" to file.
 
-       Parameters:
-           attachment -- tuple, (dirname, filename, attachment)
-               dirname -- string, the dir part of path
-               filename -- string, filename with extension
-               attachment -- bytes, decoded <Attachment> tag
-           outdir -- string, a user provided directory for output
-           safety -- string, what to do if a file exists?
-               max : do *not* overwrite
-               low : overwrite
+    Parameters:
+        attachment -- tuple, (dirname, filename, attachment)
+            dirname -- string, the dir part of path
+            filename -- string, filename with extension
+            attachment -- bytes, decoded <Attachment> tag
+        outdir -- string, a user provided directory for output
+        safety -- string, what to do if a file exists?
+            max : do *not* overwrite
+            low : overwrite
 
-       Returns:
-           nothing, just writes to a file.
+    Returns:
+        nothing, just writes to a file.
     """
     dirname, filename, attachment = attachment
     if outdir:
@@ -214,12 +224,12 @@ def write_attachment(attachment, outdir=None, safety='max'):
         with open(outpath, mode) as file:
             file.write(attachment)
     except Exception as ex: # pylint: disable=broad-except
-        print(ex, file=sys.stderr)
+        _LOG.warning(f'write_attachment fail: {ex}')
 
 
 def main():
     """main()"""
-    if _pyinstaller_trick:
+    if _OVERRIDE:
         # Override argparse
         path = '.'
         outdir = None
@@ -235,16 +245,23 @@ def main():
                             help='A file or a folder to be parsed.')
         parser.add_argument('-o', '--outdir', help='Output directory')
         parser.add_argument('-s', '--safety',
-                            help='(default: "max") ' \
+                            help='(default: max) ' \
                                  'If file already exists:\n' \
-                                 '    "max" == do *not* overwrite.\n' \
-                                 '    "low" == overwrite',
+                                 '    max == do *not* overwrite.\n' \
+                                 '    low == overwrite',
                             choices=['low', 'max'],
                             default='max')
+        parser.add_argument('-q', '--quite',
+                            help='Do not print log messages lower than ' \
+                                 'CRITICAL',
+                            action='store_true')
         args = parser.parse_args()
         path = args.path
         outdir = args.outdir
         safety = args.safety
+        if args.quite:
+            _LOG.setLevel(logging.CRITICAL)
+
     # Actual `main`
     for file in yield_xml_files(path):
         for attachment in yield_decoded_attachment(list_attachments(file)):
