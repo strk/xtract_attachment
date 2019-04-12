@@ -21,6 +21,8 @@
                                 (default: "max") If file already exists:
                                     "max" == do *not* overwrite.
                                     "low" == overwrite
+           -q, --quite           Do not print log messages lower than CRITICAL
+
 
    Exceptions:
        This program has some `except Exception` statements that can be
@@ -105,7 +107,8 @@ def yield_xml_files(path):
             with open(path_, 'r') as file:
                 yield (path_, file.read())
         except Exception as ex: # pylint: disable=broad-except
-            _LOG.warning(f'open and read file "{os.path.basename(path_)}" fail: {ex}')
+            _LOG.warning(f'Open and read file "{os.path.basename(path_)}"' \
+                         f'failed: {ex}')
 
 
 def list_attachments(file):

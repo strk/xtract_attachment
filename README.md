@@ -38,11 +38,17 @@ La [documentazione](https://pyinstaller.readthedocs.io/en/stable/operating-mode.
 
 Usare il programma è semplice, serve fornire un solo argomento: un file o una directory da analizzare.
 
-Il programma di default salverà gli allegati nella stessa directory del file di origine, puoi usare il seguente argomento facoltativo per indicare una diversa directory in cui estrarre gli allegati.
+### Argomenti facoltativi
+
 `-o OUTDIR, --outdir OUTDIR`
 
-Di default il programma *non* sovrascriverà un file esistente con lo stesso nome di un allegato. Puoi utilizzare il seguente argomento facoltativo per cambiare questo comportamento.
+Il programma di default salverà gli allegati nella stessa directory del file di origine, puoi usare questo argomento facoltativo per indicare una diversa directory in cui estrarre gli allegati.
+
 `-s {low,max}, --safety {low,max}`
+Di default il programma **non** sovrascriverà un file esistente con lo stesso nome di un allegato. Puoi utilizzare questo argomento facoltativo per sovrascrivere i file con lo stesso nome.
+
+`-q, --quite`
+Il programma non scriverà nulla in caso di successo ma scriverà deli avvertimenti nel caso di errori. Puoi impedire qualsiasi messaggio di errore con questo argomento. NOTA: nel caso di un errore di livello `CRITICAL` il messaggio verrà presentato lo stesso.
 
 ### Esempi
 
@@ -54,7 +60,9 @@ Di default il programma *non* sovrascriverà un file esistente con lo stesso nom
 
 `./xtract_attachment.py /home/alex/Download/ -o /home/alex/Documenti/Allegati/`
 
-`./xtract_attachment.py /home/alex/Download/ -o /home/alex/Documenti/Allegati/ -s low`
+`./xtract_attachment.py ../input -o /home/alex/Documenti/Allegati/ -s low`
+
+`./xtract_attachment.py /cartella -o /home/alex/Documenti/Allegati/ -s low -q`
 
 ## Note importanti (TODO?)
 
