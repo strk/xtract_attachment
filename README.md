@@ -6,7 +6,7 @@ Questa è un'utility per estrarre eventuali allegati da una fattura in formato "
 
 In Italia è entrata in vigore una normativa per cui le fatture devono essere trasmesse all'Agenzia delle Entrate secondo un determinato schema, in formato "xml".
 
-Esiste della documentazione ufficiale, si può trovare [qui](https://www.fatturapa.gov.it/export/fatturazione/it/normativa/f-2.htm).
+Esiste della documentazione ufficiale, si può trovare [qui](https://www.fatturapa.gov.it/it/norme-e-regole/documentazione-fattura-elettronica/).
 
 Non è obbligatorio che sia incluso un allegato ma alcune società aggiungono in un `<tag>` del file "xml" la versione PDF della fattura.
 
